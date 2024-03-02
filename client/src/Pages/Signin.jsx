@@ -1,15 +1,16 @@
 import { Link, useNavigate} from 'react-router-dom'
 import  { useState } from 'react'
+import {  useDispatch, useSelector } from 'react-redux'
+import { signInStart, signInFailure, signInSuccess } from '../redux/user/userSlice'
 
 
 
 const Signin = () => {
   const [formData, setFormData] = useState({})
-  const [error, setError] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-    
+  const{ loading, error } = useSelector((state)=>state.user)
 
   const navigate = useNavigate() 
+  const dispatch = useDispatch();
     
   const handleChange = (e) => {
     setFormData({
@@ -23,7 +24,7 @@ const Signin = () => {
     e.preventDefault();
     
     try {
-      setIsLoading(true)
+      dispatch(signInStart())
       const res = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: {
@@ -35,16 +36,13 @@ const Signin = () => {
       const data = await res.json();
 
       if (data.success === false) {
-         setIsLoading(false);
-        setError(data.message);
+        dispatch(signInFailure(data.message));
         return;
       }
-      setIsLoading(false);
-      setError(null)
+      dispatch(signInSuccess(data));
       navigate('/')
     } catch (error) {
-      setIsLoading(false)
-      setError(error.message)
+      dispatch(signInFailure(error.message))
     }
   };
 
@@ -62,9 +60,9 @@ const Signin = () => {
           id='email' onChange={handleChange} />
         <input type="password" placeholder='Password' className='border p-3 rounded-lg '
           id='password' onChange={handleChange} />
-        <button disabled={isLoading} className='bg-slate-700 text-white p-3
+        <button disabled={loading} className='bg-slate-700 text-white p-3
           rounded-lg uppercase hover:opacity-95
-          disabled:opacity-80'>{isLoading ? 'Loading...' : 'Sign in'}
+          disabled:opacity-80'>{loading ? 'Loading...' : 'Sign in'}
           </button>
       </form>
       <div className="flex gap-2 mt-5">
