@@ -1,4 +1,5 @@
-import Listing from "../models/lisiting.models.js"
+import Listing from "../models/listing.models.js"
+import { errorHandler } from "../utils/error.js";
 
 export const createListing = async (req, res, next) =>{
     try {
