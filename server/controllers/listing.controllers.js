@@ -32,3 +32,49 @@ export const deleteListing = async (req, res, next) =>{
         next(error);
     }
 }
+
+
+
+
+// Update listing controller
+
+export const updateListing = async (req, res, next) =>{
+    const listing = await Listing.findById(req.params.id);
+    if (!listing) {
+        return next(errorHandler(404,'Listing not foud!'));
+    }
+    if(req.user.id.toString() !==listing.userRef.toString()) {
+        return next(errorHandler(401, 'You can only update your own listings!'));
+    }
+
+    try {
+        const updatedListing = await Listing.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            {new: true}
+        );
+        if (!updatedListing) {
+            // Handle the case where the update did not succeed
+            return next(errorHandler(500, 'Failed to update the listing.'));
+        }
+        res.status(200).json(updatedListing);
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+//Route for get each listing
+
+export const getListing = async (req,res,next) =>{
+    try {
+        const listing = await Listing.findById(req.params.id);
+        if (!listing) {
+            return next(errorHandler(404, 'Listing not found'));
+        }
+        res.status(200).json(listing);
+        
+    } catch (error) {
+        next(error);
+    }
+};
