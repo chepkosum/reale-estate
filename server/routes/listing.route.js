@@ -1,3 +1,4 @@
+
 import express, { Router } from 'express'
 import { createListing, deleteListing, getListing, getListings, updateListing } from '../controllers/listing.controllers.js'
 import { verifyToken } from '../utils/verifyUser.js';
